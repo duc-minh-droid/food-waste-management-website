@@ -105,7 +105,7 @@ function SearchBar() {
             onChange={handleChange}
             value={query}
         />
-        
+        {openDropdown && !dropDownData.length && <DropdownMenu data={[{name: "No result found"}]} closeDropdown={()=>setOpenDropdown(false)}/>}
         {openDropdown && <DropdownMenu data={dropDownData} closeDropdown={()=>setOpenDropdown(false)}/>}
     </div>
   )
