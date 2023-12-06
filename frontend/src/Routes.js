@@ -8,7 +8,7 @@ function Routes() {
     return (<Router>
         <ReactRoutes>
             <Route exact path='/inventory' element={<InventoryPage/>}/>
-            <Route path="/" element={<Example />}>
+            <Route path="/" element={''}>
                 
             </Route>
             <Route path='/inventory/:recipeId' element={<RecipePage />}/>
