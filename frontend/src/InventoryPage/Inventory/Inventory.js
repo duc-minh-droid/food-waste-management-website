@@ -245,7 +245,7 @@ const data = [{
 function Inventory() {
   return (
     <div>
-        Inventory
+        <h1>Inventory</h1>
         <ul>
             {data.map((item, index) => <InventoryItem key={index} item={item}/>)}
         </ul>

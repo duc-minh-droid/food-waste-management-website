@@ -83,19 +83,31 @@ const data = [
         ]
     }]
 
-function SearchBar() {
-    const [query, setQuery] = useState("")
-    const [openDropdown, setOpenDropdown] = useState(false)
-    const [dropDownData, setDropDownData] = useState([])
-    const handleChange = (e) => {
-        setQuery(e.target.value)
-        if (e.target.value.length >= 3) {
-            setDropDownData(data)
-            setOpenDropdown(true)
-        } else {
-            setOpenDropdown(false)
+    
+    function SearchBar() {
+        const [query, setQuery] = useState("")
+        const [openDropdown, setOpenDropdown] = useState(false)
+        const [dropDownData, setDropDownData] = useState([])
+        const handleChange = (e) => {
+            setQuery(e.target.value)
+            if (e.target.value.length >= 3) {
+                setDropDownData(data)
+                // fetchIngredientQuery(query)
+                setOpenDropdown(true)
+            } else {
+                setOpenDropdown(false)
+            }
         }
-    }
+        
+        const fetchIngredientQuery = (query) => {
+            const apiKey = process.env.REACT_APP_API_KEY
+            const url = `https://api.spoonacular.com/food/ingredients/autocomplete?query=${query}&number=5&apiKey=${apiKey}`
+            fetch(url)
+                .then(res=>res.json())
+                .then(data => {
+                    setDropDownData(data)
+                })
+        }
 
   return (
     <div>

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-function InventoryModal({item, closeModal, openModal}) {
+function InventoryModal({item: {id}, closeModal, openModal}) {
     const [startDate, setStartDate] = useState(new Date());
     const handleDateChange = (date) => {
         setStartDate(date)
@@ -21,8 +21,24 @@ function InventoryModal({item, closeModal, openModal}) {
         zIndex: 999,
     };
     const modalRef = useRef()
+
+    const [inventoryItem, setInventoryItem] = useState({})
+    const [loading, setLoading] = useState(true)
+
+    const fetchInventoryItem = (id) => {
+        const apiKey = process.env.REACT_APP_API_KEY
+        const url = `https://api.spoonacular.com/food/ingredients/${id}/information?amount=1&apiKey=${apiKey}`
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                setInventoryItem(data)
+                setLoading(false)
+            })
+    }
+
     useEffect(()=>{
         let handler = e => {
+            if (!modalRef.current) return
             if (!modalRef.current.contains(e.target)) {
                 closeModal()
             }
@@ -30,16 +46,28 @@ function InventoryModal({item, closeModal, openModal}) {
 
         document.addEventListener("mousedown", handler)
     })
+    useEffect(() => {
+        if (openModal) {
+            console.log(inventoryItem)
+            fetchInventoryItem(id);
+        }
+    }, [id, openModal]);
+
   return (
         <div style={modalStyle} ref={modalRef}>
-                    {openModal && (
+                    {(openModal && !loading) ? (
                         <div>
-                            <div>Calories: {item.nutrition.nutrients[0].amount} {item.nutrition.nutrients[0].unit}</div>
-                            <div>
-                                Add expiry date: <DatePicker selected={startDate} onChange={handleDateChange} />
-                            </div>
+                        <div>Calories: {inventoryItem.nutrition.nutrients.find(nutrient => nutrient.name === 'Calories')?.amount} {inventoryItem.nutrition.nutrients.find(nutrient => nutrient.name === 'Calories')?.unit}</div>
+                        <div>Fat: {inventoryItem.nutrition.nutrients.find(nutrient => nutrient.name === 'Fat')?.amount} {inventoryItem.nutrition.nutrients.find(nutrient => nutrient.name === 'Fat')?.unit}</div>
+                        <div>Saturated Fat: {inventoryItem.nutrition.nutrients.find(nutrient => nutrient.name === 'Saturated Fat')?.amount} {inventoryItem.nutrition.nutrients.find(nutrient => nutrient.name === 'Saturated Fat')?.unit}</div>
+                        <div>Sugar: {inventoryItem.nutrition.nutrients.find(nutrient => nutrient.name === 'Sugar')?.amount} {inventoryItem.nutrition.nutrients.find(nutrient => nutrient.name === 'Sugar')?.unit}</div>
+                        <div>Protein: {inventoryItem.nutrition.nutrients.find(nutrient => nutrient.name === 'Protein')?.amount} {inventoryItem.nutrition.nutrients.find(nutrient => nutrient.name === 'Protein')?.unit}</div>
+                        <div>Category: {inventoryItem.categoryPath.join(', ')}</div>
+                        <div>
+                          Add expiry date: <DatePicker selected={startDate} onChange={handleDateChange} />
                         </div>
-                    )}
+                      </div>
+                    ): <div>Loading...</div>}
         </div>
   )
 }
