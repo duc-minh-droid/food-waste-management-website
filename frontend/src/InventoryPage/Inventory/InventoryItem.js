@@ -1,8 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 function InventoryItem({item}) {
+    const [openModal, setOpenModal] = useState(false)
+    const handleClick = () => {
+        setOpenModal(true)
+    }
+
   return (
-    <li>{item.name}</li>
+    <li onClick={handleClick}>{item.name}</li>
   )
 }
 
