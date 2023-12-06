@@ -2,7 +2,6 @@ import {BrowserRouter as Router, Routes as ReactRoutes, Route} from 'react-route
 import InventoryPage from './InventoryPage/InventoryPage'
 import React from 'react'
 import RecipePage from './InventoryPage/Recipes/RecipePage/RecipePage'
-import Example from './TestPage/Test'
 
 function Routes() {
     return (<Router>
