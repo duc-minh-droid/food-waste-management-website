@@ -257,12 +257,20 @@ function Inventory() {
 
         return () => unsubscribe()
     },[])
-
   return (
     <div>
         <h1>Inventory</h1>
         <ul>
-            {inventory.map((item, index) => <InventoryItem key={index} item={item}/>)}
+            {inventory
+                // .map(e=>new Date(e.serverTimeStamp.seconds * 1000 + e.serverTimeStamp.nanoseconds/1000000))
+                // .sort((a, b) => {
+                //     const dateA = new Date(a.expiryDate);
+                //     const dateB = new Date(b.expiryDate);
+                //     return dateA - dateB;
+                //   })
+                // .map(e=>console.log(inventory))
+                .map((item, index) => <InventoryItem key={index} item={item}/>)}
+
         </ul>
     </div>
   )
