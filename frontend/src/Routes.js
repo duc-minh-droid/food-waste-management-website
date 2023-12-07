@@ -4,9 +4,11 @@ import React from 'react'
 import RecipePage from './InventoryPage/Recipes/RecipePage/RecipePage'
 import LandingPage from './LandingPage/LandingPage'
 import ShoppingPage from './ShoppingPage/ShoppingPage'
+import NavBar from './NavBar/NavBar'
 
 function Routes() {
     return (<Router>
+        <NavBar />
         <ReactRoutes>
             <Route exact path='/inventory' element={<InventoryPage/>}/>
             <Route path="/" element={<LandingPage />}/>

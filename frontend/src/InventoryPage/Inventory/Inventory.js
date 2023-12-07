@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import InventoryItem from './InventoryItem'
-import { db } from '../../firebase'
-import { collection, getDocs, onSnapshot } from "firebase/firestore"
+import { db, auth } from '../../firebase'
+import { collection, getDocs, onSnapshot, where, query } from "firebase/firestore"
+import { onAuthStateChanged } from 'firebase/auth'
 
 // const data = [{
 //     "id": 9266,
@@ -246,17 +247,36 @@ import { collection, getDocs, onSnapshot } from "firebase/firestore"
 
 function Inventory() {
     const [inventory, setInventory] = useState([])
-    const inventoryCollectionRef = collection(db, 'inventory')
+    useEffect(() => {
+        const fetchData = async (uid) => {
+            const unsubscribe = onSnapshot(
+                query(collection(db, "inventory"), where("userID", "==", uid)),
+                (snapshot) => {
+                    const updatedInventory = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+                    setInventory(updatedInventory);
+                }
+            );
 
+            return () => unsubscribe();
+        }
 
-    useEffect(()=>{
-        const unsubscribe = onSnapshot(inventoryCollectionRef, (snapshot) => {
-            const updatedInventory = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))
-            setInventory(updatedInventory)
-        })
+        const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                const uid = user.uid;
+                fetchData(uid);
+            } else {
+                // User is signed out
+                // Clear inventory or perform other actions as needed
+                setInventory([]);
+            }
+        });
 
-        return () => unsubscribe()
-    },[])
+        return () => {
+            unsubscribeAuth();
+        };
+    }, []);
+
   return (
     <div>
         <h1>Inventory</h1>
