@@ -1,8 +1,13 @@
 import React from 'react'
+import SearchBar from './SearchBar/SearchBar'
+import ShoppingTable from './ShoppingTable/ShoppingTable'
 
 function ShoppingPage() {
   return (
-    <div>ShoppingPage</div>
+    <div>
+        <SearchBar />
+        <ShoppingTable />
+    </div>
   )
 }
 

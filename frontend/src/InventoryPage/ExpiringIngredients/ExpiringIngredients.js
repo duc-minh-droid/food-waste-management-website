@@ -12,7 +12,7 @@ function ExpiringIngredients() {
         const fetchData = async (uid) => {
             const unsubscribe = onSnapshot(
                 query(collection(db, "inventory"), where("userID", "==", uid), where('expiryDate', '!=', null), // Select only documents with expiryDate field
-                orderBy('expiryDate')),
+                    orderBy('expiryDate')),
                 (snapshot) => {
                     const updatedInventory = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
                     setInventory(updatedInventory);
@@ -47,14 +47,14 @@ function ExpiringIngredients() {
         setInventory(prev => prev.filter(item => item.id !== id))
     }
 
-  return (
-    <div>
-        <h1>Expiring Ingredients</h1>
-        <ul>
-            {inventory.length? inventory.map((item, key)=><ExpiringIngredient item={item} key={key} handleDelete={handleDelete}/>):(<li>No expiring ingredients</li>) }
-        </ul>
-    </div>
-  )
+    return (
+        <div>
+            <h1>Expiring Ingredients</h1>
+            <ul>
+                {inventory.length ? inventory.map((item, key) => <ExpiringIngredient item={item} key={key} handleDelete={handleDelete} />) : (<li>No expiring ingredients</li>)}
+            </ul>
+        </div>
+    )
 }
 
 export default ExpiringIngredients
