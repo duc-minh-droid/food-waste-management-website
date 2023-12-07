@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import {signInWithGoogle, auth, signOutUser} from '../../firebase'
 
 function Register() {
-    console.log(auth)
 
     const [user, setUser] = useState(null);
 

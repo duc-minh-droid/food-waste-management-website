@@ -1,13 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { db } from '../../firebase'
+import { doc, updateDoc } from "firebase/firestore"
 
-function InventoryModal({item: {id}, closeModal, openModal}) {
+function InventoryModal({item: {id, foodID}, closeModal, openModal}) {
     const [startDate, setStartDate] = useState(new Date());
     const handleDateChange = (date) => {
         setStartDate(date)
         // Update date to the database
+        updateInventory(id, date)
     }
+    const updateInventory = async (id, date) => {
+        const newField = {expiryDate: date}
+        const docRef = doc(db, "inventory", id)
+        await updateDoc(docRef, newField)
+    }   
     const modalStyle = {
         position: 'fixed',
         top: '50%',
@@ -48,10 +56,9 @@ function InventoryModal({item: {id}, closeModal, openModal}) {
     })
     useEffect(() => {
         if (openModal) {
-            console.log(inventoryItem)
-            fetchInventoryItem(id);
+            fetchInventoryItem(foodID);
         }
-    }, [id, openModal]);
+    }, [foodID, openModal]);
 
   return (
         <div style={modalStyle} ref={modalRef}>

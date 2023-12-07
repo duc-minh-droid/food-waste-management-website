@@ -1,4 +1,6 @@
 import React from 'react'
+import { db, auth } from '../../firebase'
+import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 
 const itemStyle = {
     padding: '8px 16px',
@@ -11,6 +13,7 @@ function DropdownItem({item, closeDropdown}) {
     const handleClick = () => {
         closeDropdown()
         // store in Inventory
+        createInventory(item)
     }
 
     const handleHover = (e) => {
@@ -20,6 +23,10 @@ function DropdownItem({item, closeDropdown}) {
       const handleLeave = (e) => {
         e.target.style.backgroundColor = 'transparent';
       };
+
+    const createInventory = async (item) => {
+        const docRef = await addDoc(collection(db, "inventory"), {foodID: item.id, image: item.image, name: item.name, userID: auth.currentUser.uid, serverTimeStamp: serverTimestamp()})
+    }
 
   return (
     <li
