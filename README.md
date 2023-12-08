@@ -19,6 +19,8 @@ The Backend is composed by Python and Django
 
 How to use the website:
 
+The Landing page:
+
 
 
 --------------------------------------------------------------
