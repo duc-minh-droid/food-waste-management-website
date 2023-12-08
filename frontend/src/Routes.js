@@ -10,11 +10,11 @@ function Routes() {
     return (<Router>
         <NavBar />
         <ReactRoutes>
-            <Route exact path='/food-waste-management-website/inventory' element={<InventoryPage/>}/>
-            <Route path="/food-waste-management-website/" element={<LandingPage />}/>
-            <Route path="/food-waste-management-website/shoppingList" element={<ShoppingPage />}/>
+            <Route exact path='/inventory' element={<InventoryPage/>}/>
+            <Route path="/" element={<LandingPage />}/>
+            <Route path="/shoppingList" element={<ShoppingPage />}/>
                 
-            <Route path='/food-waste-management-website/inventory/:recipeID' element={<RecipePage />}/>
+            <Route path='/inventory/:recipeID' element={<RecipePage />}/>
             <Route>
                 <React.Fragment>404 Not Found</React.Fragment>
             </Route>
