@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/food-waste-management-website/static/css/main.7bfe8166.css",
+    "main.js": "/food-waste-management-website/static/js/main.e7f06cf2.js",
+    "index.html": "/food-waste-management-website/index.html",
+    "main.7bfe8166.css.map": "/food-waste-management-website/static/css/main.7bfe8166.css.map",
+    "main.e7f06cf2.js.map": "/food-waste-management-website/static/js/main.e7f06cf2.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7bfe8166.css",
+    "static/js/main.e7f06cf2.js"
+  ]
+}
