@@ -3,7 +3,7 @@ import Recipe from "./Recipe";
 import { db, auth } from "../../firebase";
 import { collection, getDocs, onSnapshot, where, query } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth"
-
+import { PiBowlFoodFill } from "react-icons/pi";
 // const inventory = [
 //     {
 //         "name": "apple",
@@ -303,17 +303,16 @@ function Recipes() {
 
   useEffect(() => {
     if (inventory.length > 0) {
-      // fetchRecipesData(inventory)
+      fetchRecipesData(inventory)
       setLoading(false);
-      setRecipesData(recipeData);
+    //   setRecipesData(recipeData);
     }
   }, [inventory]);
-
   return (
-    <div>
-      <h1>Recipes</h1>
+    <div className="rcp">
+      <div className="title-icon" style={{color: '#272727'}}><PiBowlFoodFill /> Recipes</div>
       <ul>
-        {!inventory.length ? (
+        {!recipesData.length ? (
           <div>There is no recipe yet</div>
         ) : loading ? (
           <div>Loading...</div>

@@ -3,6 +3,7 @@ import InventoryItem from './InventoryItem'
 import { db, auth } from '../../firebase'
 import { collection, getDocs, onSnapshot, where, query } from "firebase/firestore"
 import { onAuthStateChanged } from 'firebase/auth'
+import { FaShoppingBasket } from "react-icons/fa";
 
 // const data = [{
 //     "id": 9266,
@@ -278,18 +279,10 @@ function Inventory() {
     }, []);
 
   return (
-    <div>
-        <h1>Inventory</h1>
-        <ul>
-            {inventory
-                // .map(e=>new Date(e.serverTimeStamp.seconds * 1000 + e.serverTimeStamp.nanoseconds/1000000))
-                // .sort((a, b) => {
-                //     const dateA = new Date(a.expiryDate);
-                //     const dateB = new Date(b.expiryDate);
-                //     return dateA - dateB;
-                //   })
-                // .map(e=>console.log(inventory))
-                .map((item, index) => <InventoryItem key={index} item={item}/>)}
+    <div className='inventory-box'>
+        <div className='title-icon'><FaShoppingBasket /> Inventory</div>
+        <ul className='inven-ul'>
+            {inventory.map((item, index) => <InventoryItem key={index} item={item}/>)}
 
         </ul>
     </div>

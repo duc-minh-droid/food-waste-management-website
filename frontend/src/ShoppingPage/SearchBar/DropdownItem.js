@@ -8,26 +8,11 @@ import {
   where,
 } from "firebase/firestore";
 
-const itemStyle = {
-  padding: "8px 16px",
-  cursor: "pointer",
-  transition: "background-color 0.3s",
-  borderBottom: "1px solid #eee",
-};
-
 function DropdownItem({ item, closeDropdown }) {
   const handleClick = () => {
     closeDropdown();
     // store in Inventory
     createShoppingList(item);
-  };
-
-  const handleHover = (e) => {
-    e.target.style.backgroundColor = "#f0f0f0";
-  };
-
-  const handleLeave = (e) => {
-    e.target.style.backgroundColor = "transparent";
   };
 
   const checkIfFoodIDExists = async (itemID) => {
@@ -51,10 +36,7 @@ function DropdownItem({ item, closeDropdown }) {
 
   return (
     <li
-      style={itemStyle}
       onClick={handleClick}
-      onMouseEnter={handleHover}
-      onMouseLeave={handleLeave}
     >
       {item.name}
     </li>

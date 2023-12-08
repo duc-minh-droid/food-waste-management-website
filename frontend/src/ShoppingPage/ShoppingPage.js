@@ -4,7 +4,7 @@ import ShoppingTable from './ShoppingTable/ShoppingTable'
 
 function ShoppingPage() {
   return (
-    <div>
+    <div className='sp-page'>
         <SearchBar />
         <ShoppingTable />
     </div>

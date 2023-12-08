@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { db, auth } from '../../firebase'
 import { doc, updateDoc } from "firebase/firestore"
 import {
@@ -9,6 +9,8 @@ import {
     query,
     where,
   } from "firebase/firestore";
+  import { FaDeleteLeft } from "react-icons/fa6";
+  import { FaSave } from "react-icons/fa";
 
 const rowStyle = {
     border: "1px solid #dddddd", // Add a border
@@ -35,7 +37,6 @@ const deleteButtonStyle = {
 
 function ShoppingRow({ item, deleteShoppingList }) {
     const [isChecked, setIsChecked] = useState(false)
-    const [canBeDeleted, setCanBeDeleted] = useState(false)
 
     const checkIfFoodIDExists = async (itemID) => {
         const inventoryCollectionRef = collection(db, "inventory");
@@ -55,11 +56,12 @@ function ShoppingRow({ item, deleteShoppingList }) {
           serverTimeStamp: serverTimestamp(),
         });
       };
+      
+      
 
     const handleCheckboxChange = (e) => {
         e.stopPropagation(); // Prevent row click when clicking the checkbox
         setIsChecked(!isChecked);
-        setCanBeDeleted(!canBeDeleted);
         if (!isChecked) {
             createInventory(item);
         }
@@ -95,6 +97,21 @@ function ShoppingRow({ item, deleteShoppingList }) {
 
     }
 
+    useEffect(() => {
+        const checkItemExistsInInventory = async () => {
+            const inventoryCollectionRef = collection(db, "inventory");
+            const q = query(
+                inventoryCollectionRef,
+                where("foodID", "==", item.id),
+                where("userID", "==", auth.currentUser.uid)
+            );
+
+            const querySnapshot = await getDocs(q);
+            setIsChecked(!querySnapshot.empty);
+        };
+
+        checkItemExistsInInventory();
+    }, [item.id]);
 
     return (
         <tr style={rowStyle}>
@@ -119,7 +136,7 @@ function ShoppingRow({ item, deleteShoppingList }) {
             </td>
 
             <td style={cellStyle}>
-                {canBeDeleted ? <button
+                {isChecked ? <button
                     onClick={handleDelete}
                     style={deleteButtonStyle}
                     onMouseEnter={(e) => {
@@ -135,14 +152,14 @@ function ShoppingRow({ item, deleteShoppingList }) {
                         e.target.style.transform = "scale(1)";
                     }}
                 >
-                    X
+                    <FaDeleteLeft />
                 </button> :
                     <button onClick={handleSave}
                         style={{
                             backgroundColor: "#6fbf73",
                             color: "#fff",
                             border: "none",
-                            padding: "8px 16px",
+                            padding: "5px 10px",
                             cursor: "pointer",
                             borderRadius: "4px",
                             transition: "background-color 0.3s, transform 0.3s",
@@ -159,7 +176,7 @@ function ShoppingRow({ item, deleteShoppingList }) {
                         onMouseUp={(e) => {
                             e.target.style.transform = "scale(1)";
                         }}
-                    >Save</button>
+                    ><FaSave /></button>
                 }
             </td>
         </tr>

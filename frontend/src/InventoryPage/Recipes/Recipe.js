@@ -18,25 +18,28 @@ function Recipe({item}) {
     const cardStyle = {
         display: 'flex',
         alignItems: 'center',
-        padding: '15px',
-        margin: '10px',
         borderRadius: '16px',
         backgroundColor: 'white',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
         transition: 'box-shadow 0.3s ease',
-        width: 'fit-content', // Adjust the width as needed
+        width: '60%',
+        padding: "10px",
+        gap: '10px'
+
       };
       
       const imageStyle = {
         width: '100px',
         height: '100px',
-        marginRight: '15px',
         borderRadius: '16px', // Border for the image
       };
       
       const textStyle = {
-        flex: '1',
-        color: 'black',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-evenly',
+        gap: '10px',
+        color: '#272727',
       };
 
     return (
@@ -44,9 +47,9 @@ function Recipe({item}) {
         <div style={cardStyle}>
           <img src={item.image} alt={item.title} style={imageStyle} />
           <div style={textStyle}>
-            <div>{item.title}</div>
-            <div>{item.usedIngredients.length ? `You have ${mapIngredientsToString(item.usedIngredients)}` : ''}</div>
-            <div>You are missing {mapIngredientsToString(item.missedIngredients)}</div>
+            <div style={{}}>{item.title}</div>
+            <div style={{fontSize: '12px'}}>{item.usedIngredients.length ? `You have ${mapIngredientsToString(item.usedIngredients)}` : ''}</div>
+            <div style={{fontSize: '12px', wordWrap: 'break-word'}}>You are missing {mapIngredientsToString(item.missedIngredients)}</div>
           </div>
         </div>
       </Link>

@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
-
+import { IoMdClose } from "react-icons/io";
 import InventoryModal from './InventoryModal';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 function InventoryItem({item}) {
+    // console.log(item)
     const [openModal, setOpenModal] = useState(false)
     const handleClick = () => {
         setOpenModal(true)
@@ -20,34 +21,15 @@ function InventoryItem({item}) {
         }
         deleteInventoryItem(item.id)
     }
-    
-    const liStyle = {
-        listStyle: 'none', // Remove default list styling
-        cursor: 'pointer', // Show cursor as pointer on hover
-        padding: '8px', // Add padding for better spacing
-        border: '1px solid #ccc', // Border for the <li>
-        borderRadius: '4px', // Rounded corners for the border
-        display: 'inline-block', // Set display to inline-block
-        width: 'fit-content',
-      };
-      const buttonStyle = {
-        marginLeft: '8px',
-        border: 'none',
-        background: 'none',
-        color: 'red',
-        cursor: 'pointer',
-      };
-
+    if (item==null) return;
   return (
-    <div>
-        <li style={liStyle} onClick={handleClick} 
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f0f0'} 
-            onMouseLeave={(e) => e.target.style.backgroundColor = 'inherit'}
+    <> 
+         <li className='inven-item' onClick={handleClick} 
         >{item.name}
-        <button style={buttonStyle} onClick={handleDelete}>x</button>
+        <button className='inven-btn' onClick={handleDelete}><IoMdClose /></button>
         </li>
         <InventoryModal item={item} closeModal={closeModal} openModal={openModal}/>
-    </div>
+    </>
   )
 }
 

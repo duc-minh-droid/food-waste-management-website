@@ -355,11 +355,17 @@ const data = {
 
 function RecipePage() {
     const [recipeData, setRecipeData] = React.useState({})
-    const {id} = useParams()
-    const fetchRecipe = (id) => {
-        setRecipeData(data)
-    }
-    useEffect(() => fetchRecipe(id),[id])
+    const {recipeID:id} = useParams()
+    const fetchRecipe = async (id) => {
+        const apiKey = process.env.REACT_APP_API_KEY
+        const url = `https://api.spoonacular.com/recipes/${id}/information?includeNutrition=false&apiKey=${apiKey}`
+        fetch(url)
+            .then(res=>res.json())
+            .then(data => {
+                setRecipeData(data)
+            })
+      }
+    useEffect(() => {fetchRecipe(id)},[id])
     
     function filterHTMLstring(string) {
         if (string) {
@@ -374,19 +380,16 @@ function RecipePage() {
     }
 
   return (
-    <div>
-        <Link to="/inventory">
-            <button>Return to Inventory</button>
-        </Link>
-        {recipeData && <div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
-                <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>{recipeData.title}</h1>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+    <div style={{backgroundColor: '#91BD96'}}>
+        {recipeData && <div style={{ fontFamily: 'Arial, sans-serif', margin: '0 auto', padding: '40px 100px 40px 100px' }}>
+                <h1 style={{ marginBottom: '20px' }}>{recipeData.title}</h1>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', gap: '40px' }}>
                     <div style={{ flex: '1', marginRight: '20px' }}>
                         <img src={recipeData.image} alt={recipeData.title} style={{ width: '100%', borderRadius: '8px' }} />
                     </div>
                     <div style={{ flex: '1' }}>
                         <h3>Summary:</h3>
-                        <p dangerouslySetInnerHTML={{ __html: filterHTMLstring(recipeData.summary) }}></p>
+                        <p dangerouslySetInnerHTML={{ __html: filterHTMLstring(recipeData.summary) }} />
                     </div>
                 </div>
                 <div style={{ backgroundColor: '#f5f5f5', padding: '15px', borderRadius: '8px' }}>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 function ExpiringIngredient({ item, handleDelete }) {
   const [isExpired, setIsExpired] = useState(false);
+  console.log(item)
 
   function mapExpiryDate(expiryDate) {
     const date = new Date(
@@ -21,14 +22,6 @@ function ExpiringIngredient({ item, handleDelete }) {
     }
   }
 
-  const listItemStyle = {
-    display: "inline-block",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottom: "1px solid #ccc",
-    padding: "10px",
-    listStyle: "none",
-  };
 
   const listItem = {
     margin: "5px",
@@ -41,22 +34,23 @@ function ExpiringIngredient({ item, handleDelete }) {
   };
 
   return (
-    <li style={listItemStyle}>
-      <p style={listItem}>{item.name}</p>
-      {mapExpiryDate(item.expiryDate).status === "Expired" ? (
-        <p style={listItem}>
-          Already expired!{" "}
-          <a style={deleteLink} onClick={() => handleDelete(item.id)} href="#">
-            Delete the ingredient?
-          </a>
-        </p>
-      ) : (
-        <p style={listItem}>
-          {mapExpiryDate(item.expiryDate).status === "Expiring today"
-            ? "Expiring today"
-            : `Expiring in ${mapExpiryDate(item.expiryDate).daysLeft} days`}
-        </p>
-      )}
+    <li className="exp-li">
+            <p style={listItem}>{item.name}</p>
+            {mapExpiryDate(item.expiryDate).status === " - Expired" ? (
+                <p style={listItem}>
+                Already expired!{" "}
+                <a style={deleteLink} onClick={() => handleDelete(item.id)} href="#">
+                    Delete the ingredient?
+                </a>
+                </p>
+            ) : (
+                <p style={listItem}>
+                {mapExpiryDate(item.expiryDate).status === "Expiring today"
+                    ? "- Expiring today"
+                    : ` - Expiring in ${mapExpiryDate(item.expiryDate).daysLeft} days`}
+                </p>
+            )}
+        
     </li>
   );
 }

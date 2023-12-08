@@ -4,6 +4,7 @@ import { collection, onSnapshot, orderBy, query, where } from "firebase/firestor
 import ExpiringIngredient from './ExpiringIngredient'
 import { deleteDoc, doc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+import { FaCarrot } from "react-icons/fa";
 
 function ExpiringIngredients() {
     const [inventory, setInventory] = useState([])
@@ -48,8 +49,8 @@ function ExpiringIngredients() {
     }
 
     return (
-        <div>
-            <h1>Expiring Ingredients</h1>
+        <div className='exp'>
+            <div className='title-icon'><FaCarrot />Expiring</div>
             <ul>
                 {inventory.length ? inventory.map((item, key) => <ExpiringIngredient item={item} key={key} handleDelete={handleDelete} />) : (<li>No expiring ingredients</li>)}
             </ul>

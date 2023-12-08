@@ -23,7 +23,7 @@ function Register() {
     }
   return (
     <div>
-        {!user?<button onClick={handleLogIn}>Log in</button>:<button onClick={handleLogOut}>Log out</button>}
+        {!user?<button onClick={handleLogIn} className='log login'>Log in</button>:<button onClick={handleLogOut} className='log logout'>Log out</button>}
     </div>
   )
 }

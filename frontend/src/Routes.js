@@ -14,7 +14,7 @@ function Routes() {
             <Route path="/" element={<LandingPage />}/>
             <Route path="/shoppingList" element={<ShoppingPage />}/>
                 
-            <Route path='/inventory/:recipeId' element={<RecipePage />}/>
+            <Route path='/inventory/:recipeID' element={<RecipePage />}/>
             <Route>
                 <React.Fragment>404 Not Found</React.Fragment>
             </Route>

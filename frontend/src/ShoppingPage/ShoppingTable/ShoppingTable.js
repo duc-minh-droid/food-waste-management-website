@@ -13,7 +13,7 @@ const tableStyle = {
 function ShoppingTable() {
     const headers = ["Product", "Quantity"];
     const [data, setData] = useState([])
-
+    
     useEffect(() => {
         const fetchData = async (uid) => {
             const unsubscribe = onSnapshot(
@@ -51,7 +51,7 @@ function ShoppingTable() {
 
     return (
         <div style={tableStyle}>
-            <table style={{ width: "100%" }}>
+            <table style={{ width: "100%" }} className="sb-table" cellspacing="0" cellpadding="0">
                 <thead>
                     <tr>
                         <th></th>

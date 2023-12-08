@@ -91,8 +91,8 @@ const data = [
         const handleChange = (e) => {
             setQuery(e.target.value)
             if (e.target.value.length >= 3) {
-                setDropDownData(data)
-                // fetchIngredientQuery(query)
+                // setDropDownData(data)
+                fetchIngredientQuery(query)
                 setOpenDropdown(true)
             } else {
                 setOpenDropdown(false)
@@ -101,21 +101,21 @@ const data = [
         
         const fetchIngredientQuery = (query) => {
             const apiKey = process.env.REACT_APP_API_KEY
-            const url = `https://api.spoonacular.com/food/ingredients/autocomplete?query=${query}&number=5&apiKey=${apiKey}`
+            const url = `https://api.spoonacular.com/food/ingredients/search?query=${query}&number=10&apiKey=${apiKey}`
             fetch(url)
                 .then(res=>res.json())
                 .then(data => {
-                    setDropDownData(data)
+                    setDropDownData(data.results)
                 })
         }
 
   return (
-    <div>
+    <div style={{width: '100%', position: 'relative', textAlign:'center'}}>
         <input
             type="text"
-            placeholder="Search here"
+            placeholder="🔎     Add ingredient"
             onChange={handleChange}
-            value={query}
+            value={query} className='ing-sb'
         />
         {openDropdown && !dropDownData.length && <DropdownMenu data={[{name: "No result found"}]} closeDropdown={()=>setOpenDropdown(false)}/>}
         {openDropdown && <DropdownMenu data={dropDownData} closeDropdown={()=>setOpenDropdown(false)}/>}
