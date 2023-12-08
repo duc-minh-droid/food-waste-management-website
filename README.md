@@ -29,6 +29,8 @@ The Landing page:
 <br>
 <img width="455" alt="landing2" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/db7d6381-4404-4d3d-a4a5-76b223453645">
 <br>
+The user is met with the landing page upon opening the page. This outlines the directives the website follows and the tasks the user is able to perform
+<br>
 <img width="52" alt="signin" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/be63e404-df68-44dc-bfd4-b6757114f4cb">
 <br>
 <img width="317" alt="signin2" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/33d83fb2-a450-4dcc-b6e4-06485b94ff4c">
