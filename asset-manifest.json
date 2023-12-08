@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/food-waste-management-website/static/css/main.7bfe8166.css",
-    "main.js": "/food-waste-management-website/static/js/main.e7f06cf2.js",
-    "index.html": "/food-waste-management-website/index.html",
-    "main.7bfe8166.css.map": "/food-waste-management-website/static/css/main.7bfe8166.css.map",
-    "main.e7f06cf2.js.map": "/food-waste-management-website/static/js/main.e7f06cf2.js.map"
+    "main.css": "/static/css/main.7bfe8166.css",
+    "main.js": "/static/js/main.9989be32.js",
+    "index.html": "/index.html",
+    "main.7bfe8166.css.map": "/static/css/main.7bfe8166.css.map",
+    "main.9989be32.js.map": "/static/js/main.9989be32.js.map"
   },
   "entrypoints": [
     "static/css/main.7bfe8166.css",
-    "static/js/main.e7f06cf2.js"
+    "static/js/main.9989be32.js"
   ]
 }
