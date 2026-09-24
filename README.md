@@ -1,5 +1,7 @@
 # WasteLess
 
+**Live demo:** https://food-waste-management-rho.vercel.app (demo mode, sample data)
+
 Track the food in your kitchen, catch it before it expires, and find recipes that use it up.
 Built by Group 7 in four days at a Google DevFest hackathon, December 2023.
 
