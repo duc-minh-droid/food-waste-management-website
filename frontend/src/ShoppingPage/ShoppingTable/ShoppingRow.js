@@ -1,186 +1,95 @@
-import React, { useState, useEffect } from "react";
-import { db, auth } from '../../firebase'
-import { doc, updateDoc } from "firebase/firestore"
-import {
-    collection,
-    addDoc,
-    serverTimestamp,
-    getDocs,
-    query,
-    where,
-  } from "firebase/firestore";
-  import { FaDeleteLeft } from "react-icons/fa6";
-  import { FaSave } from "react-icons/fa";
+import React, { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { FaDeleteLeft } from 'react-icons/fa6'
+import { FaSave } from 'react-icons/fa'
+import { api } from '../../services'
+import { IngredientThumb } from '../../components/Thumb'
+import { useToast } from '../../components/Toast'
 
-const rowStyle = {
-    border: "1px solid #dddddd", // Add a border
-};
-const cellStyle = {
-    padding: "8px", // Add padding to cells
-    textAlign: "center", // Align text to the left
-};
-const checkboxStyle = {
-    width: "20px",
-    height: "20px",
-    borderRadius: "4px",
-    border: "2px solid #ccc",
-};
-const deleteButtonStyle = {
-    backgroundColor: "#FF0000", // Light red
-    color: "#fff",
-    border: "none",
-    borderRadius: "4px",
-    padding: "5px 10px",
-    cursor: "pointer",
-    transition: "background-color 0.3s, color 0.3s, transform 0.3s", // Added transform for click animation
-};
-
-function ShoppingRow({ item, deleteShoppingList }) {
-    const [isChecked, setIsChecked] = useState(false)
-
-    const checkIfFoodIDExists = async (itemID) => {
-        const inventoryCollectionRef = collection(db, "inventory");
-        const q = query(inventoryCollectionRef, where("foodID", "==", itemID), where("userID", "==", auth.currentUser.uid));
-        const querySnapshot = await getDocs(q);
-        return !querySnapshot.empty;
-      };
-    
-      const createInventory = async (item) => {
-        const foodIDExists = await checkIfFoodIDExists(item.id);
-        if (foodIDExists) return;
-        const docRef = await addDoc(collection(db, "inventory"), {
-          foodID: item.id,
-          image: item.image,
-          name: item.name,
-          userID: auth.currentUser.uid,
-          serverTimeStamp: serverTimestamp(),
-        });
-      };
-      
-      
-
-    const handleCheckboxChange = (e) => {
-        e.stopPropagation(); // Prevent row click when clicking the checkbox
-        setIsChecked(!isChecked);
-        if (!isChecked) {
-            createInventory(item);
-        }
-    };
-
-    const [quantity, setQuantity] = useState(item.quantity);
-    const [updatedQuantity, setUpdatedQuantity] = useState(item.quantity);
-
-    const handleIncrement = () => {
-        setUpdatedQuantity(updatedQuantity + 1);
-    };
-
-    const handleDecrement = () => {
-        if (updatedQuantity > 0) {
-            setUpdatedQuantity(updatedQuantity - 1);
-        }
-    };
-
-    const handleSave = () => {
-        setQuantity(updatedQuantity);
-        updateInventory(item.id, updatedQuantity)
-    };
-    const handleQuantityChange = (e) => {
-        setUpdatedQuantity(parseInt(e.target.value) || 0);
-    };
-    const updateInventory = async (id, quantity) => {
-        const newField = { quantity: quantity }
-        const docRef = doc(db, "shoppingList", id)
-        await updateDoc(docRef, newField)
-    }
-    const handleDelete = () => {
-        deleteShoppingList(item.id)
-
-    }
-
-    useEffect(() => {
-        const checkItemExistsInInventory = async () => {
-            const inventoryCollectionRef = collection(db, "inventory");
-            const q = query(
-                inventoryCollectionRef,
-                where("foodID", "==", item.id),
-                where("userID", "==", auth.currentUser.uid)
-            );
-
-            const querySnapshot = await getDocs(q);
-            setIsChecked(!querySnapshot.empty);
-        };
-
-        checkItemExistsInInventory();
-    }, [item.id]);
-
-    return (
-        <tr style={rowStyle}>
-            <td style={cellStyle}>
-                <input
-                    type="checkbox"
-                    style={checkboxStyle}
-                    onChange={handleCheckboxChange}
-                    checked={isChecked}
-                />
-            </td>
-            <td style={cellStyle}>{item.name}</td>
-            <td style={cellStyle}>
-                <button onClick={handleDecrement}>-</button>
-                <input
-                    type="number"
-                    value={updatedQuantity}
-                    onChange={handleQuantityChange}
-                    style={{ width: "40px", textAlign: "center" }}
-                />
-                <button onClick={handleIncrement}>+</button>
-            </td>
-
-            <td style={cellStyle}>
-                {isChecked ? <button
-                    onClick={handleDelete}
-                    style={deleteButtonStyle}
-                    onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = "#DC143C"; // Darker shade on hover
-                    }}
-                    onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = "#FF0000"; // Light red on leave
-                    }}
-                    onMouseDown={(e) => {
-                        e.target.style.transform = "scale(0.95)"; // Click animation
-                    }}
-                    onMouseUp={(e) => {
-                        e.target.style.transform = "scale(1)";
-                    }}
-                >
-                    <FaDeleteLeft />
-                </button> :
-                    <button onClick={handleSave}
-                        style={{
-                            backgroundColor: "#6fbf73",
-                            color: "#fff",
-                            border: "none",
-                            padding: "5px 10px",
-                            cursor: "pointer",
-                            borderRadius: "4px",
-                            transition: "background-color 0.3s, transform 0.3s",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = "#5ca866";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "#6fbf73";
-                        }}
-                        onMouseDown={(e) => {
-                            e.target.style.transform = "scale(0.95)";
-                        }}
-                        onMouseUp={(e) => {
-                            e.target.style.transform = "scale(1)";
-                        }}
-                    ><FaSave /></button>
-                }
-            </td>
-        </tr>
-    );
+function Check({ checked, onChange, label }) {
+  return (
+    <button className={`check ${checked ? 'is-on' : ''}`} onClick={onChange} role='checkbox' aria-checked={checked} aria-label={label}>
+      <svg viewBox='0 0 24 24'>
+        <motion.path
+          d='M5 12.5l4.5 4.5L19 7.5'
+          fill='none'
+          stroke='currentColor'
+          strokeWidth='3'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+          initial={false}
+          animate={{ pathLength: checked ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+        />
+      </svg>
+    </button>
+  )
 }
 
-export default ShoppingRow;
+function ShoppingRow({ item, checked }) {
+  const toast = useToast()
+  const [updatedQuantity, setUpdatedQuantity] = useState(item.quantity)
+  useEffect(() => setUpdatedQuantity(item.quantity), [item.quantity])
+  const dirty = updatedQuantity !== item.quantity
+
+  // Ticking an item puts it in the inventory (the "instantly update your
+  // inventory" feature). Unticking is a no-op, as in the original.
+  const handleCheckboxChange = async () => {
+    if (checked) return
+    await api.addToInventory({ id: item.foodID, name: item.name, image: item.image })
+    toast(`${item.name} moved into your kitchen`)
+  }
+
+  const handleSave = () => {
+    api.setShoppingQuantity(item.id, updatedQuantity)
+    toast(`Saved ${item.name} x${updatedQuantity}`)
+  }
+  const handleDelete = () => {
+    api.removeFromShopping(item.id)
+    toast(`Removed ${item.name} from list`, 'info')
+  }
+
+  return (
+    <motion.li
+      layout
+      className={`sb-row ${checked ? 'is-checked' : ''}`}
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, x: 40, transition: { duration: 0.2 } }}
+    >
+      <Check checked={checked} onChange={handleCheckboxChange} label={`Bought ${item.name}`} />
+      <div className='sb-name'>
+        <IngredientThumb item={item} size={30} />
+        <span className='strike'>{item.name}</span>
+      </div>
+      <div className='stepper'>
+        <button onClick={() => setUpdatedQuantity((q) => Math.max(0, q - 1))} aria-label='Decrease'>-</button>
+        <AnimatePresence mode='popLayout' initial={false}>
+          <motion.span
+            key={updatedQuantity}
+            className='stepper-val'
+            initial={{ y: -12, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 12, opacity: 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            {updatedQuantity}
+          </motion.span>
+        </AnimatePresence>
+        <button onClick={() => setUpdatedQuantity((q) => q + 1)} aria-label='Increase'>+</button>
+      </div>
+      <div className='sb-actions'>
+        {dirty && !checked && (
+          <motion.button className='icon-btn save' onClick={handleSave} initial={{ scale: 0 }} animate={{ scale: 1 }} whileTap={{ scale: 0.9 }} aria-label='Save quantity'>
+            <FaSave />
+          </motion.button>
+        )}
+        <motion.button className='icon-btn del' onClick={handleDelete} whileTap={{ scale: 0.9 }} aria-label={`Remove ${item.name}`}>
+          <FaDeleteLeft />
+        </motion.button>
+      </div>
+    </motion.li>
+  )
+}
+
+export default ShoppingRow

@@ -1,58 +1,47 @@
-import React, { useState } from "react";
+import React from 'react'
+import { motion } from 'framer-motion'
+import { daysLeft } from '../../services'
+import { IngredientThumb } from '../../components/Thumb'
+import { urgency } from '../Inventory/InventoryItem'
 
-function ExpiringIngredient({ item, handleDelete }) {
-  const [isExpired, setIsExpired] = useState(false);
-  console.log(item)
+const HORIZON = 10 // days shown by a full bar
 
-  function mapExpiryDate(expiryDate) {
-    const date = new Date(
-      expiryDate.seconds * 1000 + expiryDate.nanoseconds / 1000000
-    );
-    const now = new Date();
-
-    const diffInTime = date.getTime() - now.getTime();
-    const diffInDays = Math.ceil(diffInTime / (1000 * 60 * 60 * 24));
-
-    if (diffInDays < 0) {
-      return { status: "Expired", daysLeft: 0 };
-    } else if (diffInDays === 0) {
-      return { status: "Expiring today", daysLeft: 0 };
-    } else {
-      return { status: "Expiring soon", daysLeft: diffInDays };
-    }
-  }
-
-
-  const listItem = {
-    margin: "5px",
-    padding: "5px",
-  };
-
-  const deleteLink = {
-    color: "#FF5A5F",
-    cursor: "pointer",
-  };
-
-  return (
-    <li className="exp-li">
-            <p style={listItem}>{item.name}</p>
-            {mapExpiryDate(item.expiryDate).status === " - Expired" ? (
-                <p style={listItem}>
-                Already expired!{" "}
-                <a style={deleteLink} onClick={() => handleDelete(item.id)} href="#">
-                    Delete the ingredient?
-                </a>
-                </p>
-            ) : (
-                <p style={listItem}>
-                {mapExpiryDate(item.expiryDate).status === "Expiring today"
-                    ? "- Expiring today"
-                    : ` - Expiring in ${mapExpiryDate(item.expiryDate).daysLeft} days`}
-                </p>
-            )}
-        
-    </li>
-  );
+function label(d) {
+  if (d < -1) return `Expired ${-d} days ago`
+  if (d === -1) return 'Expired yesterday'
+  if (d === 0) return 'Expires today'
+  if (d === 1) return 'Expires tomorrow'
+  return `${d} days left`
 }
 
-export default ExpiringIngredient;
+function ExpiringIngredient({ item, handleDelete }) {
+  const d = daysLeft(item.expiryDate)
+  const u = urgency(item.expiryDate)
+  const pct = d < 0 ? 100 : Math.max(6, 100 - (d / HORIZON) * 100)
+
+  return (
+    <motion.li
+      layout
+      className={`exp-li u-${u}`}
+      initial={{ opacity: 0, x: -16 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 16, transition: { duration: 0.15 } }}
+    >
+      <IngredientThumb item={item} size={34} />
+      <div className='exp-body'>
+        <div className='exp-top'>
+          <span className='exp-name'>{item.name}</span>
+          <span className='exp-label'>{label(d)}</span>
+        </div>
+        <div className='exp-track'>
+          <motion.div className='exp-fill' initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, ease: 'easeOut' }} />
+        </div>
+        {d < 0 && (
+          <button className='link-danger' onClick={() => handleDelete(item)}>Already expired. Remove it?</button>
+        )}
+      </div>
+    </motion.li>
+  )
+}
+
+export default ExpiringIngredient

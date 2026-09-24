@@ -1,12 +1,11 @@
-import { Router } from 'react-router-dom';
-import NavBar from './NavBar/NavBar';
 import Routes from './Routes'
+import { ToastProvider } from './components/Toast'
 
 function App() {
   return (
-    <div>
+    <ToastProvider>
       <Routes />
-    </div>
+    </ToastProvider>
   );
 }
 

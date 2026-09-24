@@ -1,78 +1,35 @@
-import React, { useState, useEffect } from "react";
-import ShoppingRow from "./ShoppingRow";
-import { db, auth } from '../../firebase'
-import { collection, getDocs, onSnapshot, where, query, deleteDoc, doc } from "firebase/firestore"
-import { onAuthStateChanged } from 'firebase/auth'
+import React from 'react'
+import { AnimatePresence } from 'framer-motion'
+import ShoppingRow from './ShoppingRow'
+import { useInventory } from '../../services'
 
-const tableStyle = {
-    margin: "auto", // Center the table horizontally
-    marginTop: "50px", // Add space at the top
-    width: "70%", // Set width of the table
-};
+function ShoppingTable({ data }) {
+  const inventory = useInventory()
+  const inKitchen = new Set((inventory || []).map((i) => String(i.foodID)))
 
-function ShoppingTable() {
-    const headers = ["Product", "Quantity"];
-    const [data, setData] = useState([])
-    
-    useEffect(() => {
-        const fetchData = async (uid) => {
-            const unsubscribe = onSnapshot(
-                query(collection(db, "shoppingList"), where("userID", "==", uid)),
-                (snapshot) => {
-                    const updatedShoppingList = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-                    setData(updatedShoppingList);
-                }
-            );
+  if (!data) {
+    return <div className='card sb-table'>{[0, 1, 2].map((i) => <div key={i} className='skeleton row-skel' />)}</div>
+  }
 
-            return () => unsubscribe();
-        }
+  const done = data.filter((i) => inKitchen.has(String(i.foodID))).length
 
-        const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in
-                const uid = user.uid;
-                fetchData(uid);
-            } else {
-                // User is signed out
-                // Clear inventory or perform other actions as needed
-                setData([]);
-            }
-        });
-
-        return () => {
-            unsubscribeAuth();
-        };
-    }, []);
-
-    const deleteShoppingList = async (id) => {
-        await deleteDoc(doc(db, "shoppingList", id));
-        setData(prev => prev.filter(item => item.id !== id))
-    }
-
-    return (
-        <div style={tableStyle}>
-            <table style={{ width: "100%" }} className="sb-table" cellspacing="0" cellpadding="0">
-                <thead>
-                    <tr>
-                        <th></th>
-                        {headers.map((header, index) => (
-                            <th key={index}>{header}</th>
-                        ))}
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.map((item, index) => (
-                        <ShoppingRow
-                            key={index}
-                            item={item}
-                            deleteShoppingList={deleteShoppingList}
-                        />
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
+  return (
+    <div className='card sb-table'>
+      <div className='sb-head'>
+        <span>Product</span>
+        <span>Quantity</span>
+        <span className='sb-progress'>{done}/{data.length} in basket</span>
+      </div>
+      {!data.length && <p className='muted'>Your list is empty. Search above to add something.</p>}
+      <ul>
+        <AnimatePresence initial={false}>
+          {data.map((item) => (
+            <ShoppingRow key={item.id} item={item} checked={inKitchen.has(String(item.foodID))} />
+          ))}
+        </AnimatePresence>
+      </ul>
+    </div>
+  )
 }
 
-export default ShoppingTable;
+export default ShoppingTable

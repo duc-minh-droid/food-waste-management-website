@@ -1,31 +1,20 @@
-import React, { useEffect, useState } from 'react'
-import {signInWithGoogle, auth, signOutUser} from '../../firebase'
+import React from 'react'
+import { api, useUser } from '../../services'
+import { useToast } from '../../components/Toast'
 
 function Register() {
+  const user = useUser()
+  const toast = useToast()
 
-    const [user, setUser] = useState(null);
+  if (api.isDemo) {
+    const reset = () => { api.reset(); toast('Demo data reset') }
+    return <button onClick={reset} className='log reset'>Reset<span className='hide-sm'> demo</span></button>
+  }
 
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            setUser(user);
-        });
-
-        return () => {
-            unsubscribe();
-        };
-    }, []);
-
-    const handleLogIn = () => {
-        signInWithGoogle()
-    }
-    const handleLogOut = () => {
-        signOutUser()
-    }
-  return (
-    <div>
-        {!user?<button onClick={handleLogIn} className='log login'>Log in</button>:<button onClick={handleLogOut} className='log logout'>Log out</button>}
-    </div>
-  )
+  if (user === undefined) return <div className='log log-ghost' />
+  return !user
+    ? <button onClick={() => api.signIn()} className='log login'>Log in</button>
+    : <button onClick={() => api.signOut()} className='log logout'>Log out</button>
 }
 
 export default Register

@@ -1,58 +1,36 @@
 import React from 'react'
-import { Link, Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { RecipeThumb } from '../../components/Thumb'
 
-function Recipe({item}) {
+const mapIngredientsToString = (arr) => {
+  const names = arr.map((i) => i.name)
+  if (names.length <= 1) return names.join('')
+  return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1]
+}
 
-    const mapIngredientsToString = arr => {
-        const lastIndex = arr.length - 1;
-        return arr.map((item, index) => {
-            if (index === 0) {
-                return item.name;
-            } else if (index === lastIndex) {
-                return " and " + item.name;
-            }
-            return ", " + item.name;
-        }).join('');
-    };
+function Recipe({ item }) {
+  const used = item.usedIngredients.length
+  const total = used + item.missedIngredients.length
+  const pct = total ? Math.round((used / total) * 100) : 0
 
-    const cardStyle = {
-        display: 'flex',
-        alignItems: 'center',
-        borderRadius: '16px',
-        backgroundColor: 'white',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-        transition: 'box-shadow 0.3s ease',
-        width: '60%',
-        padding: "10px",
-        gap: '10px'
-
-      };
-      
-      const imageStyle = {
-        width: '100px',
-        height: '100px',
-        borderRadius: '16px', // Border for the image
-      };
-      
-      const textStyle = {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-evenly',
-        gap: '10px',
-        color: '#272727',
-      };
-
-    return (
-        <Link to={`/inventory/${item.id}`} style={{ textDecoration: 'none' }}>
-        <div style={cardStyle}>
-          <img src={item.image} alt={item.title} style={imageStyle} />
-          <div style={textStyle}>
-            <div style={{}}>{item.title}</div>
-            <div style={{fontSize: '12px'}}>{item.usedIngredients.length ? `You have ${mapIngredientsToString(item.usedIngredients)}` : ''}</div>
-            <div style={{fontSize: '12px', wordWrap: 'break-word'}}>You are missing {mapIngredientsToString(item.missedIngredients)}</div>
+  return (
+    <Link to={`/inventory/${item.id}`} className='recipe-link'>
+      <motion.div className='recipe-card' whileHover={{ y: -4 }} whileTap={{ scale: 0.99 }}>
+        <RecipeThumb recipe={item} className='recipe-card-img' />
+        <div className='recipe-text'>
+          <div className='recipe-title'>{item.title}</div>
+          <div className='match'>
+            <div className='match-track'>
+              <motion.div className='match-fill' initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.9, ease: 'easeOut', delay: 0.2 }} />
+            </div>
+            <span className='match-label'>{used}/{total} in your kitchen</span>
           </div>
+          {used > 0 && <div className='recipe-have'>You have {mapIngredientsToString(item.usedIngredients)}</div>}
+          {item.missedIngredients.length > 0 && <div className='recipe-miss'>Missing {mapIngredientsToString(item.missedIngredients)}</div>}
         </div>
-      </Link>
+      </motion.div>
+    </Link>
   )
 }
 
