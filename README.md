@@ -1,67 +1,167 @@
-**Google DevFest Group 7 Project: Food Waste Management Website**
+# WasteLess
 
-By Thomas, Deeni, Ameera and Aria
+Track the food in your kitchen, catch it before it expires, and find recipes that use it up.
+Built by Group 7 in four days at a Google DevFest hackathon, December 2023.
 
---------------------------------------------------------------
+![WasteLess demo](docs/media/demo.gif)
 
-The product: <a href="https://gregarious-puppy-922937.netlify.app/" target="_blank">WasteLess</a>
+Team: Thomas, Deeni, Ameera and Aria. Commits by
+[@duc-minh-droid](https://github.com/duc-minh-droid),
+[@Aura4G](https://github.com/Aura4G),
+[@deeniaffendi](https://github.com/deeniaffendi) and
+[@ameeraarfaa](https://github.com/ameeraarfaa).
 
---------------------------------------------------------------
+## What it does
 
-This project provides a website in which the user takes inventory of their food and charts what else they can buy to make efficient recipes. This is done with the aim of minimising food leftovers and therefore minimising the amount of product that would otherwise release methane into the atmosphere when left to landfill.
+Household food waste mostly happens quietly: something gets bought, pushed to the back of the fridge,
+and thrown out a week later. In landfill it rots into methane. WasteLess is a small web app that tries to
+interrupt that loop.
 
-The website boasts a sleek design as well as a feature to indicate local food bank. They redistribute excess food to those less fortunate, as well as boast educational/awareness initiatives.
+- **Inventory.** Search an ingredient and add it to your kitchen. Click any item to see its nutrition and
+  set an expiry date (with one-click "tomorrow / 3 days / 1 week" shortcuts).
+- **Expiring.** Items with a date are sorted soonest first, with a bar that drains as the date approaches.
+  Expired items are flagged and can be removed in one click.
+- **Recipes.** Suggestions are ranked by how many of your ingredients they use, then by how few you are
+  missing. Each recipe page marks what you have and what you need, and can push the missing items onto
+  your shopping list.
+- **Shopping list.** Add items, adjust quantities, and tick them off in the shop. Ticking an item moves it
+  into your inventory.
 
---------------------------------------------------------------
+| Landing | Kitchen |
+| --- | --- |
+| ![Landing page](docs/media/landing.png) | ![Inventory page](docs/media/inventory.png) |
+| **Ingredient details** | **Recipe** |
+| ![Ingredient modal](docs/media/ingredient-modal.png) | ![Recipe page](docs/media/recipe.png) |
 
-Tech Used:
-The Frontend is handled by React and Firebase
+## Demo mode
 
-The Backend is composed by Python and Django
+The hackathon version needed a Firebase project (Google sign-in plus Firestore) and a Spoonacular API key
+for every screen. To make it runnable and deployable without either, the app now has a **demo mode**:
 
---------------------------------------------------------------
+- It switches on automatically when the Firebase and Spoonacular variables are not set, or when
+  `REACT_APP_DEMO_MODE=true`.
+- A "Demo mode" badge is always visible in the navbar, and the login button becomes "Reset demo".
+- Data is stored in your browser's `localStorage` and seeded with a sample kitchen (one item already
+  expired, a few about to).
+- Ingredient search, nutrition and recipes come from canned sample data in
+  [`frontend/src/services/demoData.js`](frontend/src/services/demoData.js): 47 ingredients with rough
+  per-100 g nutrition and 12 recipes written for the demo. They are illustrative, not Spoonacular data.
 
-How to use the website:
+With real credentials, the same UI talks to Firebase and Spoonacular exactly as it did at the hackathon.
 
-The Landing page:
+## How it works
 
-<img width="455" alt="landing1" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/9377b374-dfca-4d03-b5e0-720322c1189d">
-<br>
-<img width="455" alt="landing2" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/db7d6381-4404-4d3d-a4a5-76b223453645">
-<br>
-The user is met with the landing page upon opening the page. This outlines the directives the website follows and the tasks the user is able to perform
-<br>
-<img width="52" alt="signin" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/be63e404-df68-44dc-bfd4-b6757114f4cb">
-<br>
-<img width="317" alt="signin2" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/33d83fb2-a450-4dcc-b6e4-06485b94ff4c">
-<br>
+![Architecture](docs/media/architecture.svg)
 
-The Inventory Page:
+Every component goes through one module, [`services/index.js`](frontend/src/services/index.js), which
+exports `api` plus a few hooks (`useUser`, `useInventory`, `useShopping`). Which backend `api` points at is
+decided once, at build time:
 
-<img width="627" alt="inventory" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/3d34c15c-9c5e-4b73-b818-d9422269e54f">
-<br>
-<img width="153" alt="inventory2" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/65b33512-01c4-48dd-aca0-0cd6e5123d77">
-<br>
-<img width="616" alt="inventory3" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/9c3bdd3b-07cb-47ad-9089-5964af571ff7">
-<br>
-<img width="503" alt="inventory4" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/ccfc69c0-3b66-440f-95d8-3fc6c0bd03e5">
-<br>
-<img width="430" alt="inventory5" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/75c89d57-e942-4f11-9bf3-8b04e30fbcc8">
-<br>
-<img width="781" alt="recipes" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/86f0f0d3-c5fb-4421-8abc-40d992e53767">
-<br>
+- [`services/live.js`](frontend/src/services/live.js) is the original data flow moved out of the
+  components: Firestore collections `inventory` and `shoppingList`, each document tagged with the
+  signed-in user's `userID`, plus Spoonacular for search, nutrition and recipes.
+- [`services/demo.js`](frontend/src/services/demo.js) implements the same interface over an in-memory
+  store persisted to `localStorage`, with small artificial delays so loading states still show.
 
-The Shopping Page:
+The recipe ranking in demo mode mirrors Spoonacular's `findByIngredients?ranking=1`: count how many recipe
+ingredients are in your inventory, sort by that descending, then by missing count ascending.
 
-<img width="616" alt="shopping1" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/3ff971d0-35df-442f-8d82-22a51902a28d">
-<br>
-<img width="592" alt="shopping2" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/c3957a62-aaad-4614-8154-ac923d2f23e3">
-<br>
-<img width= "575" alt="shopping3" src="https://github.com/duc-minh-droid/food-waste-management-website/assets/111776997/51625f21-e421-4793-8c64-9c2034bc3777">
-<br>
+![Life of an ingredient](docs/media/food-lifecycle.svg)
 
---------------------------------------------------------------
+The `backend/` folder is a Django project generated on day one and never wired up; the app talks to
+Firebase directly. It is kept for the record and still runs (`/admin` only).
 
-[![license](https://img.shields.io/github/license/dec0dOS/amazing-github-template.svg?style=flat-square)](LICENSE)
+## Quick start
 
-BSD 3-Clause "New" or "Revised" License: https://github.com/django/django/blob/main/LICENSE
+Requires Node 18+ (tested on Node 24).
+
+```bash
+cd frontend
+npm install
+npm start          # http://localhost:8124, demo mode
+```
+
+Production build (this is what Vercel runs):
+
+```bash
+cd frontend
+npm run build      # static output in frontend/build
+```
+
+### Live mode
+
+Copy `frontend/.env.example` to `frontend/.env.local` and fill in a Firebase web config and a Spoonacular
+key. Enable Google sign-in in Firebase Auth and create a Firestore database. Note that every
+`REACT_APP_*` value ends up in the public JavaScript bundle, so restrict the Firebase key to your domain
+and treat the Spoonacular key as public (a proxy would be the proper fix).
+
+### Backend (optional, unused by the app)
+
+```bash
+cd backend
+python -m venv .venv && .venv/Scripts/activate   # or: source .venv/bin/activate
+pip install -r requirements.txt
+python manage.py runserver 8125
+```
+
+Set `DJANGO_SECRET_KEY` for anything beyond local use.
+
+### Deploying on Vercel
+
+| Setting | Value |
+| --- | --- |
+| Root directory | `frontend` |
+| Framework preset | Create React App |
+| Build command | `npm run build` |
+| Output directory | `build` |
+| Environment variables | none for demo mode; the `REACT_APP_*` set from `.env.example` for live mode |
+
+`frontend/vercel.json` rewrites all paths to `index.html` so deep links such as `/inventory/1003` work.
+The original Netlify deployment (<https://gregarious-puppy-922937.netlify.app>) still loads but is the
+December 2023 build.
+
+## Project layout
+
+```
+backend/                     Django scaffold (admin route only)
+docs/media/                  demo recording, screenshots, diagrams
+frontend/
+  public/                    index.html, favicon, manifest, Netlify _redirects
+  src/
+    services/                config, demo + live backends, demo data, hooks
+    components/              IngredientSearch, Modal, Toast, Thumb
+    LandingPage/             hero, stats, feature cards
+    InventoryPage/           Inventory, ExpiringIngredients, Recipes, RecipePage
+    ShoppingPage/            SearchBar, ShoppingTable, ShoppingRow
+    NavBar/                  nav links, demo badge, login / reset
+  vercel.json                SPA rewrite for Vercel
+```
+
+## What was built at the hackathon, and what changed since
+
+In the four days the team built the React frontend with Google sign-in, Firestore-backed inventory and
+shopping list, Spoonacular ingredient search and recipe suggestions, and a Django project that ended up
+unused. The "Monitor" feature (tracking your impact over time) was planned but not started.
+
+The later polish pass kept the same pages, routes, Firestore schema and component layout, and:
+
+- moved all Firebase / Spoonacular calls into `services/` and added demo mode;
+- redesigned the UI (layout, typography, colour system) and added animation: page transitions, orbiting
+  hero, count-up stats, chips that pop in and out, animated nutrition and expiry bars, drawn checkmarks,
+  toasts;
+- fixed bugs: ingredient search queried the previous keystroke; expired items never showed the delete
+  prompt (status was compared against `" - Expired"`); the ingredient modal added a new document listener
+  on every render; the expiring query needed a Firestore composite index that did not exist; recipes showed
+  "no recipe yet" while still loading; the 404 route was invalid for React Router 6; shopping rows read
+  `auth.currentUser.uid` before sign-in had resolved;
+- moved the Firebase config and Django secret out of the source into environment variables;
+- updated React to 18.3.1, React Router to 6.30.6 and Firebase to 10.14.1 (latest patches in their
+  majors), removed five unused dependencies, and moved the Django pin to 5.2 LTS.
+
+Still open: a real "Monitor" page, a server-side proxy for the Spoonacular key, Firestore security rules in
+the repo, and replacing Create React App (unmaintained) with Vite.
+
+## Licence
+
+No licence file has been committed. The original README mentioned BSD 3-Clause; ask the authors before
+reusing the code.
