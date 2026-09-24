@@ -1,0 +1,11 @@
+node_modules/
+frontend/build/
+.env
+.env.local
+.env.*.local
+.vercel/
+__pycache__/
+*.pyc
+backend/db.sqlite3
+.venv/
+.DS_Store

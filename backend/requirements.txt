@@ -1,0 +1,2 @@
+# Scaffold only (admin route). 5.2 is the current LTS in the same major as the 5.0 the project was generated with.
+Django>=5.2,<5.3
